@@ -14,11 +14,21 @@ align-items:center;
 justify-content:center;
 text-align:center;
 font-family:Arial,sans-serif;
-background:linear-gradient(160deg,#0f0f0f,#1a001f,#2b0033);
+
+background:linear-gradient(-45deg,#0f0f0f,#1a001f,#2b0033,#120018,#1f002b);
+background-size:400% 400%;
+animation:bgMove 12s ease infinite;
+
 height:100vh;
 margin:0;
 overflow:hidden;
 color:white;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
 }
 
 h1{
@@ -53,7 +63,7 @@ position:absolute;
 position:fixed;
 top:20px;
 right:20px;
-font-size:24px;
+font-size:22px;
 background:#ff0080;
 border:none;
 border-radius:50%;
@@ -73,50 +83,70 @@ opacity:0;
 pointer-events:none;
 }
 
+.fade{
+opacity:0;
+transition:opacity 0.6s ease;
+}
+
+.fade.show{
+opacity:1;
+}
+
 .heart{
 position:absolute;
-font-size:26px;
-animation:float 7s linear infinite;
+font-size:22px;
+opacity:0.7;
+animation:float 10s linear infinite;
 }
 
 @keyframes float{
-0%{transform:translateY(100vh);}
-100%{transform:translateY(-10vh);}
+0%{transform:translateY(100vh) scale(0.8);opacity:0;}
+20%{opacity:0.8;}
+100%{transform:translateY(-10vh) scale(1.2);opacity:0;}
 }
 
-.trap{
-animation:shake 0.35s infinite;
-box-shadow:
-0 0 10px #ff0080,
-0 0 25px #ff0080,
-0 0 40px #ff0080,
-0 0 70px #ff0080;
-}
-
-@keyframes shake{
-0%{transform:translate(0,0)}
-25%{transform:translate(-3px,2px)}
-50%{transform:translate(3px,-2px)}
-75%{transform:translate(-2px,-2px)}
-100%{transform:translate(2px,2px)}
-}
-
-#spider{
+#loader{
 position:fixed;
-top:120px;
-left:50%;
-font-size:100px;
-display:none;
-pointer-events:none;
-transition:transform 0.15s linear;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background:#0f0f0f;
 z-index:9999;
 }
 
-</style>
+#progressBar{
+width:220px;
+height:10px;
+background:#222;
+border-radius:20px;
+overflow:hidden;
+margin-top:15px;
+}
 
+#progress{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#ff0080,#ff4da6);
+}
+
+</style>
 </head>
 
 <body>
+
+<div id="loader">
+<h2>Loading question...</h2>
+<div id="progressBar">
+<div id="progress"></div>
+</div>
+</div>
+
+<div id="mainContent" style="display:none;">
 
 <button class="audioBtn" onclick="toggleMusic()">🔊</button>
 
@@ -127,9 +157,9 @@ z-index:9999;
 <button class="no" id="no">NO 🙃</button>
 </div>
 
-<div class="flash" id="flash"></div>
+</div>
 
-<div id="spider">🕷️</div>
+<div class="flash" id="flash"></div>
 
 <audio id="music" loop>
 <source src="https://cdn.pixabay.com/audio/2023/02/28/audio_5d6b8e0f8c.mp3">
@@ -137,18 +167,14 @@ z-index:9999;
 
 <script>
 
-let yesSize=20
-let step=0
 let finished=false
 let playing=false
-let spiderActive=false
+let step=0
 
 let no=document.getElementById("no")
 let yes=document.getElementById("yes")
-let spider=document.getElementById("spider")
 
 let questions=[
-
 "Are you sure about that? 🤨",
 "Maybe you're shy? 😏",
 "What if I buy you food? 🍔",
@@ -158,15 +184,10 @@ let questions=[
 "Stop trying to press NO 😂",
 "Just press YES already 😈",
 "Come on... don't pretend you're innocent 😇",
-"Your finger keeps missing YES 🤔",
-"Is that a NO or are you just teasing me? 😏",
-"You know curiosity always wins 👀",
-"Last chance before I make the YES button HUGE 😈"
-
+"Your finger keeps missing YES 🤔"
 ]
 
 function toggleMusic(){
-
 let music=document.getElementById("music")
 
 if(!playing){
@@ -177,7 +198,6 @@ playing=true
 music.pause()
 playing=false
 }
-
 }
 
 function moveButton(){
@@ -194,38 +214,17 @@ let safeY2=yesRect.bottom+120
 let x,y
 
 do{
-
 x=Math.random()*(window.innerWidth-120)
 y=Math.random()*(window.innerHeight-200)+120
-
-}while(
-
-x>safeX1 &&
-x<safeX2 &&
-y>safeY1 &&
-y<safeY2
-
-)
+}
+while(x>safeX1 && x<safeX2 && y>safeY1 && y<safeY2)
 
 no.style.left=x+"px"
 no.style.top=y+"px"
 
-yesSize+=6
-yes.style.fontSize=yesSize+"px"
-
-if(yesSize>60){
-yes.classList.add("trap")
-}
-
 if(step<questions.length){
-
 document.getElementById("question").innerHTML=questions[step]
 step++
-
-}
-
-if(step==5){
-duplicateNo()
 }
 
 }
@@ -233,27 +232,38 @@ duplicateNo()
 no.addEventListener("mouseover",moveButton)
 no.addEventListener("touchstart",moveButton)
 
-function duplicateNo(){
+document.addEventListener("mousemove",avoidCursor)
+document.addEventListener("touchmove",avoidCursor)
 
-for(let i=0;i<3;i++){
+function avoidCursor(e){
 
-let btn=document.createElement("button")
+if(finished) return
 
-btn.innerHTML="NO 😅"
-btn.className="no"
+let cursorX=e.touches?e.touches[0].clientX:e.clientX
+let cursorY=e.touches?e.touches[0].clientY:e.clientY
 
-btn.style.left=Math.random()*window.innerWidth+"px"
-btn.style.top=Math.random()*window.innerHeight+"px"
+let rect=no.getBoundingClientRect()
 
-btn.addEventListener("mouseover",moveButton)
+let distX=Math.abs(cursorX-rect.left)
+let distY=Math.abs(cursorY-rect.top)
 
-document.body.appendChild(btn)
-
+if(distX<120 && distY<80){
+moveButton()
 }
 
 }
 
 yes.addEventListener("click",yesClick)
+
+function showMessage(text){
+
+document.body.innerHTML='<h1 id="msg" class="fade">'+text+'</h1>'
+
+setTimeout(()=>{
+document.getElementById("msg").classList.add("show")
+},50)
+
+}
 
 function yesClick(){
 
@@ -263,63 +273,21 @@ finished=true
 flashEffect()
 
 setTimeout(()=>{
-document.body.innerHTML="<h1>Screenshot captured 📸</h1>"
+showMessage("Screenshot captured 📸")
 },700)
 
 setTimeout(()=>{
-document.body.innerHTML="<h1>🔮 You are beautiful...</h1>"
-},1800)
+showMessage("🚶‍♂️🚶‍♀️🚶‍♂️ People are watching...")
+},2000)
 
 setTimeout(()=>{
-document.body.innerHTML="<h1> you are psiko and got big ass...</h1>"
-},3000)
+showMessage("Just kidding 😂")
+},3500)
 
 setTimeout(()=>{
-activateSpider()
-},4200)
-
-setTimeout(()=>{
-spiderActive=false
-document.body.innerHTML="<h1>Just kidding 😂</h1>"
-},6500)
-
-setTimeout(()=>{
-document.body.innerHTML="<h1>miss me always ❤️</h1>"
+showMessage("I know u gonna miss me ❤️")
 setInterval(createHeart,200)
-},7800)
-
-}
-
-function activateSpider(){
-
-spider.style.display="block"
-spiderActive=true
-
-}
-
-document.addEventListener("mousemove",followPointer)
-document.addEventListener("touchmove",followPointer)
-
-function followPointer(e){
-
-if(!spiderActive) return
-
-let x,y
-
-if(e.touches){
-
-x=e.touches[0].clientX
-y=e.touches[0].clientY
-
-}else{
-
-x=e.clientX
-y=e.clientY
-
-}
-
-spider.style.left=x+"px"
-spider.style.top=y+"px"
+},5000)
 
 }
 
@@ -330,9 +298,7 @@ let flash=document.getElementById("flash")
 flash.style.opacity="1"
 
 setTimeout(()=>{
-
 flash.style.opacity="0"
-
 },200)
 
 }
@@ -340,24 +306,43 @@ flash.style.opacity="0"
 function createHeart(){
 
 let heart=document.createElement("div")
-
 heart.className="heart"
-
 heart.innerHTML="❤️"
-
 heart.style.left=Math.random()*100+"vw"
+heart.style.fontSize=(18+Math.random()*15)+"px"
+heart.style.animationDuration=(8+Math.random()*6)+"s"
 
 document.body.appendChild(heart)
 
 setTimeout(()=>{
-
 heart.remove()
-
-},7000)
+},14000)
 
 }
 
-setInterval(createHeart,900)
+setInterval(createBackgroundHeart,1200)
+
+function createBackgroundHeart(){
+createHeart()
+}
+
+let progress=0
+
+let loading=setInterval(()=>{
+
+progress+=5
+document.getElementById("progress").style.width=progress+"%"
+
+if(progress>=100){
+
+clearInterval(loading)
+
+document.getElementById("loader").style.display="none"
+document.getElementById("mainContent").style.display="block"
+
+}
+
+},80)
 
 </script>
 
