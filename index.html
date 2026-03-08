@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Important Question  😈</title>
+<title>Important Question 😈</title>
 
 <style>
 
@@ -19,6 +19,7 @@ height:100vh;
 overflow:hidden;
 color:white;
 margin:0;
+position:relative;
 }
 
 h1{
@@ -26,6 +27,7 @@ font-size:clamp(26px,5vw,40px);
 padding:20px;
 max-width:90%;
 text-shadow:0 0 15px rgba(255,0,120,0.8);
+z-index:10;
 }
 
 button{
@@ -36,6 +38,7 @@ border-radius:14px;
 margin:12px;
 cursor:pointer;
 transition:0.3s;
+z-index:5;
 }
 
 #yes{
@@ -91,14 +94,15 @@ pointer-events:none;
 
 <div class="flash" id="flash"></div>
 
-<audio id="music" loop>
-<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_8c8f9c2a3e.mp3">
+<audio id="music" loop preload="auto">
+<source src="https://cdn.pixabay.com/audio/2023/03/14/audio_c8c8c7a9be.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 
 let yesSize=20
 let step=0
+let musicStarted=false
 
 let questions=[
 
@@ -120,10 +124,26 @@ let questions=[
 
 let no=document.getElementById("no")
 
+function startMusic(){
+
+if(musicStarted) return
+
+let music=document.getElementById("music")
+
+music.volume=0.6
+music.play()
+
+musicStarted=true
+
+}
+
+document.body.addEventListener("click",startMusic)
+document.body.addEventListener("touchstart",startMusic)
+
 function moveButton(){
 
-let x=Math.random()*(window.innerWidth-100)
-let y=Math.random()*(window.innerHeight-60)
+let x=Math.random()*(window.innerWidth-120)
+let y=Math.random()*(window.innerHeight-200)+120
 
 no.style.left=x+"px"
 no.style.top=y+"px"
@@ -159,7 +179,7 @@ btn.innerHTML="NO 😅"
 btn.className="no"
 
 btn.style.left=Math.random()*window.innerWidth+"px"
-btn.style.top=Math.random()*window.innerHeight+"px"
+btn.style.top=(Math.random()*window.innerHeight-200+120)+"px"
 
 btn.addEventListener("mouseover",moveButton)
 
@@ -172,9 +192,6 @@ document.body.appendChild(btn)
 function yesClick(){
 
 flashEffect()
-
-let music=document.getElementById("music")
-music.play()
 
 setTimeout(()=>{
 document.body.innerHTML="<h1>I know u like me ❤️</h1>"
