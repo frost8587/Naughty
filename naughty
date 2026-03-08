@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Important Question 😈</title>
+
+<style>
+
+body{
+text-align:center;
+font-family:Arial;
+background:linear-gradient(135deg,#ff416c,#ff4b2b);
+height:100vh;
+overflow:hidden;
+color:white;
+}
+
+h1{
+margin-top:120px;
+font-size:38px;
+padding:20px;
+}
+
+button{
+padding:15px 35px;
+font-size:22px;
+border:none;
+border-radius:12px;
+margin:20px;
+cursor:pointer;
+transition:0.3s;
+}
+
+#yes{
+background:#00e676;
+color:white;
+}
+
+.no{
+background:#ff1744;
+color:white;
+position:absolute;
+}
+
+.heart{
+position:absolute;
+font-size:25px;
+animation:float 6s linear infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(100vh);}
+100%{transform:translateY(-10vh);}
+}
+
+#message{
+font-size:28px;
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1 id="question">Do you want to be naughty with me? 😈</h1>
+
+<button id="yes" onclick="yesClick()">YES 😏</button>
+<button class="no" id="no">NO 🙃</button>
+
+<div id="message"></div>
+
+<audio id="music" autoplay loop>
+<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<script>
+
+let yesSize=22
+let step=0
+
+let questions=[
+
+"Are you sure about that? 🤨",
+"Maybe you're shy? 😏",
+"What if I buy you food? 🍔",
+"Chocolate first? 🍫",
+"Movie night maybe? 🎬",
+"You can't escape this question 👀",
+"Stop trying to press NO 😂",
+"Just press YES already 😈"
+
+]
+
+let no=document.getElementById("no")
+
+function moveButton(){
+
+let x=Math.random()*window.innerWidth
+let y=Math.random()*window.innerHeight
+
+no.style.left=x+"px"
+no.style.top=y+"px"
+
+yesSize+=8
+document.getElementById("yes").style.fontSize=yesSize+"px"
+
+if(step<questions.length){
+
+document.getElementById("question").innerHTML=questions[step]
+
+step++
+
+}
+
+if(step==4){
+
+duplicateNo()
+
+}
+
+if(navigator.vibrate){
+navigator.vibrate(50)
+}
+
+}
+
+no.addEventListener("mouseover",moveButton)
+no.addEventListener("touchstart",moveButton)
+
+function duplicateNo(){
+
+for(let i=0;i<3;i++){
+
+let btn=document.createElement("button")
+
+btn.innerHTML="NO 😅"
+btn.className="no"
+
+btn.style.left=Math.random()*window.innerWidth+"px"
+btn.style.top=Math.random()*window.innerHeight+"px"
+
+btn.addEventListener("mouseover",moveButton)
+
+document.body.appendChild(btn)
+
+}
+
+}
+
+function yesClick(){
+
+document.body.innerHTML="<h1>Initializing naughty protocol... 😈</h1>"
+
+setTimeout(fakeLoading,2000)
+
+}
+
+function fakeLoading(){
+
+document.body.innerHTML="<h1>Analyzing your answer...</h1>"
+
+setTimeout(finalScreen,2000)
+
+}
+
+function finalScreen(){
+
+document.body.innerHTML="<h1>You said YES 😈❤️</h1><h2>You are officially trapped now 😏</h2>"
+
+setInterval(createHeart,200)
+
+}
+
+function createHeart(){
+
+let heart=document.createElement("div")
+
+heart.className="heart"
+
+heart.innerHTML="❤️"
+
+heart.style.left=Math.random()*100+"vw"
+
+document.body.appendChild(heart)
+
+setTimeout(()=>{
+heart.remove()
+},6000)
+
+}
+
+setInterval(createHeart,800)
+
+</script>
+
+</body>
+</html>
