@@ -13,12 +13,12 @@ flex-direction:column;
 align-items:center;
 justify-content:center;
 text-align:center;
-font-family:Arial, sans-serif;
+font-family:Arial,sans-serif;
 background:linear-gradient(160deg,#0f0f0f,#1a001f,#2b0033);
 height:100vh;
+margin:0;
 overflow:hidden;
 color:white;
-margin:0;
 }
 
 h1{
@@ -84,11 +84,29 @@ animation:float 7s linear infinite;
 100%{transform:translateY(-10vh);}
 }
 
+.trap{
+animation:shake 0.35s infinite;
+box-shadow:
+0 0 10px #ff0080,
+0 0 25px #ff0080,
+0 0 40px #ff0080,
+0 0 70px #ff0080;
+}
+
+@keyframes shake{
+0%{transform:translate(0,0)}
+25%{transform:translate(-3px,2px)}
+50%{transform:translate(3px,-2px)}
+75%{transform:translate(-2px,-2px)}
+100%{transform:translate(2px,2px)}
+}
+
 #spider{
 position:fixed;
-top:100px;
+top:120px;
 left:50%;
 font-size:100px;
+display:none;
 pointer-events:none;
 transition:transform 0.15s linear;
 z-index:9999;
@@ -111,7 +129,7 @@ z-index:9999;
 
 <div class="flash" id="flash"></div>
 
-<div id="spider" style="display:none;">🕷️</div>
+<div id="spider">🕷️</div>
 
 <audio id="music" loop>
 <source src="https://cdn.pixabay.com/audio/2023/02/28/audio_5d6b8e0f8c.mp3">
@@ -121,9 +139,13 @@ z-index:9999;
 
 let yesSize=20
 let step=0
-let playing=false
 let finished=false
+let playing=false
 let spiderActive=false
+
+let no=document.getElementById("no")
+let yes=document.getElementById("yes")
+let spider=document.getElementById("spider")
 
 let questions=[
 
@@ -142,10 +164,6 @@ let questions=[
 "Last chance before I make the YES button HUGE 😈"
 
 ]
-
-let no=document.getElementById("no")
-let yes=document.getElementById("yes")
-let spider=document.getElementById("spider")
 
 function toggleMusic(){
 
@@ -166,8 +184,28 @@ function moveButton(){
 
 if(finished) return
 
-let x=Math.random()*(window.innerWidth-120)
-let y=Math.random()*(window.innerHeight-200)+120
+let yesRect=yes.getBoundingClientRect()
+
+let safeX1=yesRect.left-150
+let safeX2=yesRect.right+150
+let safeY1=yesRect.top-120
+let safeY2=yesRect.bottom+120
+
+let x,y
+
+do{
+
+x=Math.random()*(window.innerWidth-120)
+y=Math.random()*(window.innerHeight-200)+120
+
+}while(
+
+x>safeX1 &&
+x<safeX2 &&
+y>safeY1 &&
+y<safeY2
+
+)
 
 no.style.left=x+"px"
 no.style.top=y+"px"
@@ -175,9 +213,15 @@ no.style.top=y+"px"
 yesSize+=6
 yes.style.fontSize=yesSize+"px"
 
+if(yesSize>60){
+yes.classList.add("trap")
+}
+
 if(step<questions.length){
+
 document.getElementById("question").innerHTML=questions[step]
 step++
+
 }
 
 if(step==5){
@@ -223,11 +267,11 @@ document.body.innerHTML="<h1>Screenshot captured 📸</h1>"
 },700)
 
 setTimeout(()=>{
-document.body.innerHTML="<h1>🔮 Connecting to Voodoo spirits...</h1>"
+document.body.innerHTML="<h1>🔮 You are beautiful...</h1>"
 },1800)
 
 setTimeout(()=>{
-document.body.innerHTML="<h1>🚶‍♂️🚶‍♀️🚶‍♂️ People are watching...</h1>"
+document.body.innerHTML="<h1> you are psiko and got big ass...</h1>"
 },3000)
 
 setTimeout(()=>{
@@ -240,7 +284,7 @@ document.body.innerHTML="<h1>Just kidding 😂</h1>"
 },6500)
 
 setTimeout(()=>{
-document.body.innerHTML="<h1>I know u like me ❤️</h1>"
+document.body.innerHTML="<h1>miss me always ❤️</h1>"
 setInterval(createHeart,200)
 },7800)
 
@@ -263,11 +307,15 @@ if(!spiderActive) return
 let x,y
 
 if(e.touches){
+
 x=e.touches[0].clientX
 y=e.touches[0].clientY
+
 }else{
+
 x=e.clientX
 y=e.clientY
+
 }
 
 spider.style.left=x+"px"
@@ -282,7 +330,9 @@ let flash=document.getElementById("flash")
 flash.style.opacity="1"
 
 setTimeout(()=>{
+
 flash.style.opacity="0"
+
 },200)
 
 }
@@ -300,7 +350,9 @@ heart.style.left=Math.random()*100+"vw"
 document.body.appendChild(heart)
 
 setTimeout(()=>{
+
 heart.remove()
+
 },7000)
 
 }
