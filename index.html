@@ -19,7 +19,6 @@ height:100vh;
 overflow:hidden;
 color:white;
 margin:0;
-position:relative;
 }
 
 h1{
@@ -27,7 +26,6 @@ font-size:clamp(26px,5vw,40px);
 padding:20px;
 max-width:90%;
 text-shadow:0 0 15px rgba(255,0,120,0.8);
-z-index:10;
 }
 
 button{
@@ -38,7 +36,6 @@ border-radius:14px;
 margin:12px;
 cursor:pointer;
 transition:0.3s;
-z-index:5;
 }
 
 #yes{
@@ -55,6 +52,20 @@ transform:scale(1.1);
 background:#333;
 color:white;
 position:absolute;
+}
+
+.audioBtn{
+position:fixed;
+top:20px;
+right:20px;
+font-size:24px;
+background:#ff0080;
+border:none;
+border-radius:50%;
+width:50px;
+height:50px;
+cursor:pointer;
+box-shadow:0 0 10px rgba(255,0,120,0.8);
 }
 
 .heart{
@@ -85,7 +96,9 @@ pointer-events:none;
 
 <body>
 
-<h1 id="question">Do you want to be naughty with me, babyboo? 😈</h1>
+<button class="audioBtn" onclick="toggleMusic()">🔊</button>
+
+<h1 id="question">Do you want to be naughty with me? 😈</h1>
 
 <div>
 <button id="yes" onclick="yesClick()">YES 😏</button>
@@ -94,15 +107,15 @@ pointer-events:none;
 
 <div class="flash" id="flash"></div>
 
-<audio id="music" loop preload="auto">
-<source src="https://cdn.pixabay.com/audio/2023/03/14/audio_c8c8c7a9be.mp3" type="audio/mpeg">
+<audio id="music" loop>
+<source src="https://cdn.pixabay.com/audio/2023/02/28/audio_5d6b8e0f8c.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 
 let yesSize=20
 let step=0
-let musicStarted=false
+let playing=false
 
 let questions=[
 
@@ -124,21 +137,20 @@ let questions=[
 
 let no=document.getElementById("no")
 
-function startMusic(){
-
-if(musicStarted) return
+function toggleMusic(){
 
 let music=document.getElementById("music")
 
+if(!playing){
 music.volume=0.6
 music.play()
-
-musicStarted=true
-
+playing=true
+}else{
+music.pause()
+playing=false
 }
 
-document.body.addEventListener("click",startMusic)
-document.body.addEventListener("touchstart",startMusic)
+}
 
 function moveButton(){
 
@@ -179,7 +191,7 @@ btn.innerHTML="NO 😅"
 btn.className="no"
 
 btn.style.left=Math.random()*window.innerWidth+"px"
-btn.style.top=(Math.random()*window.innerHeight-200+120)+"px"
+btn.style.top=Math.random()*window.innerHeight+"px"
 
 btn.addEventListener("mouseover",moveButton)
 
