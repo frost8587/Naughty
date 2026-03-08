@@ -35,17 +35,12 @@ border:none;
 border-radius:14px;
 margin:12px;
 cursor:pointer;
-transition:0.3s;
 }
 
 #yes{
 background:linear-gradient(135deg,#ff0080,#ff4da6);
 color:white;
 box-shadow:0 0 20px rgba(255,0,120,0.8);
-}
-
-#yes:hover{
-transform:scale(1.1);
 }
 
 .no{
@@ -65,18 +60,6 @@ border-radius:50%;
 width:50px;
 height:50px;
 cursor:pointer;
-box-shadow:0 0 10px rgba(255,0,120,0.8);
-}
-
-.heart{
-position:absolute;
-font-size:26px;
-animation:float 7s linear infinite;
-}
-
-@keyframes float{
-0%{transform:translateY(100vh);}
-100%{transform:translateY(-10vh);}
 }
 
 .flash{
@@ -90,6 +73,27 @@ opacity:0;
 pointer-events:none;
 }
 
+.heart{
+position:absolute;
+font-size:26px;
+animation:float 7s linear infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(100vh);}
+100%{transform:translateY(-10vh);}
+}
+
+#spider{
+position:fixed;
+top:100px;
+left:50%;
+font-size:100px;
+pointer-events:none;
+transition:transform 0.15s linear;
+z-index:9999;
+}
+
 </style>
 
 </head>
@@ -101,14 +105,16 @@ pointer-events:none;
 <h1 id="question">Do you want to be naughty with me? 😈</h1>
 
 <div>
-<button id="yes" onclick="yesClick()">YES 😏</button>
+<button id="yes">YES 😏</button>
 <button class="no" id="no">NO 🙃</button>
 </div>
 
 <div class="flash" id="flash"></div>
 
+<div id="spider" style="display:none;">🕷️</div>
+
 <audio id="music" loop>
-<source src="https://cdn.pixabay.com/audio/2023/02/28/audio_5d6b8e0f8c.mp3" type="audio/mpeg">
+<source src="https://cdn.pixabay.com/audio/2023/02/28/audio_5d6b8e0f8c.mp3">
 </audio>
 
 <script>
@@ -116,6 +122,8 @@ pointer-events:none;
 let yesSize=20
 let step=0
 let playing=false
+let finished=false
+let spiderActive=false
 
 let questions=[
 
@@ -136,6 +144,8 @@ let questions=[
 ]
 
 let no=document.getElementById("no")
+let yes=document.getElementById("yes")
+let spider=document.getElementById("spider")
 
 function toggleMusic(){
 
@@ -154,6 +164,8 @@ playing=false
 
 function moveButton(){
 
+if(finished) return
+
 let x=Math.random()*(window.innerWidth-120)
 let y=Math.random()*(window.innerHeight-200)+120
 
@@ -161,7 +173,7 @@ no.style.left=x+"px"
 no.style.top=y+"px"
 
 yesSize+=6
-document.getElementById("yes").style.fontSize=yesSize+"px"
+yes.style.fontSize=yesSize+"px"
 
 if(step<questions.length){
 document.getElementById("question").innerHTML=questions[step]
@@ -170,10 +182,6 @@ step++
 
 if(step==5){
 duplicateNo()
-}
-
-if(navigator.vibrate){
-navigator.vibrate(40)
 }
 
 }
@@ -201,14 +209,69 @@ document.body.appendChild(btn)
 
 }
 
+yes.addEventListener("click",yesClick)
+
 function yesClick(){
+
+if(finished) return
+finished=true
 
 flashEffect()
 
 setTimeout(()=>{
+document.body.innerHTML="<h1>Screenshot captured 📸</h1>"
+},700)
+
+setTimeout(()=>{
+document.body.innerHTML="<h1>🔮 Connecting to Voodoo spirits...</h1>"
+},1800)
+
+setTimeout(()=>{
+document.body.innerHTML="<h1>🚶‍♂️🚶‍♀️🚶‍♂️ People are watching...</h1>"
+},3000)
+
+setTimeout(()=>{
+activateSpider()
+},4200)
+
+setTimeout(()=>{
+spiderActive=false
+document.body.innerHTML="<h1>Just kidding 😂</h1>"
+},6500)
+
+setTimeout(()=>{
 document.body.innerHTML="<h1>I know u like me ❤️</h1>"
 setInterval(createHeart,200)
-},800)
+},7800)
+
+}
+
+function activateSpider(){
+
+spider.style.display="block"
+spiderActive=true
+
+}
+
+document.addEventListener("mousemove",followPointer)
+document.addEventListener("touchmove",followPointer)
+
+function followPointer(e){
+
+if(!spiderActive) return
+
+let x,y
+
+if(e.touches){
+x=e.touches[0].clientX
+y=e.touches[0].clientY
+}else{
+x=e.clientX
+y=e.clientY
+}
+
+spider.style.left=x+"px"
+spider.style.top=y+"px"
 
 }
 
